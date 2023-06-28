@@ -1,0 +1,41 @@
+import re
+
+long_text = """
+Variopartner SICAV
+529900LPCSV88817QH61
+1. TARENO GLOBAL WATER SOLUTIONS FUND
+LU2001709034
+LU2057889995
+LU2001709547
+2. TARENO FIXED INCOME FUND
+LU1299722972
+3. TARENO GLOBAL EQUITY FUND
+LU1299721909
+LU1299722113
+LU1299722030
+4. MIV GLOBAL MEDTECH FUND
+LU0329630999
+LU0329630130
+"""
+
+data = {}
+sub_fund = []
+current_fund = None
+
+lines = long_text.strip().split('\n')
+
+data['name'] = lines[0].strip()
+data['lei'] = lines[1].strip()
+
+for line in lines[2:]:
+    line = line.strip()
+    if re.match(r'^\d+\.', line):
+        fund_title = line.split('.', 1)[1].strip()
+        current_fund = {'title': fund_title, 'isin': []}
+        sub_fund.append(current_fund)
+    elif re.match(r'^LU\d{10}$', line):
+        current_fund['isin'].append(line)
+
+data['sub_fund'] = sub_fund
+
+print(data)
